@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: form_management_db
+    restart: always
+    ports:
+      - "27018:27017" # Cổng 27018 bên ngoài máy thật -> 27017 bên trong Docker
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

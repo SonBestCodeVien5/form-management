@@ -1,9 +1,6 @@
 const express = require('express'); // khởi tạo express từ package đã cài
 const app = express(); // khởi tạo app từ express
 const session = require('express-session'); // import thư viện quản lí session 
-const apiRoutes = require('./routes/apiRoutes');
-
-const twoFactorRoutes = require('./routes/twoFactorRoutes');
 
 require('dotenv').config(); // Đọc file .env
 const connectDB = require('./config/database'); // Gọi file cấu hình DB
@@ -40,12 +37,9 @@ app.get('/', (req, res) => { // get phải giống hệt là '/'
   res.render('home'); // Tìm file views/home.ejs
 });
 
-app.use('/api', apiRoutes);
-
 app.use('/', authRoutes); // Sử dụng các route liên quan đến xác thực
                           // chỉ xét bắt đầu của route thỏa mãn '/'
                           
-app.use('/api/2fa', twoFactorRoutes);
 // --- 4. KHỞI ĐỘNG SERVER ---
 app.listen(port, () => {
   console.log(`Server đang chạy tại: http://localhost:${port}`);
