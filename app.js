@@ -6,6 +6,7 @@ require('dotenv').config(); // Đọc file .env
 const connectDB = require('./config/database'); // Gọi file cấu hình DB
 
 const authRoutes = require('./routes/authRoutes'); // Gọi các route liên quan đến xác thực
+const formRoutes = require('./routes/formRoutes'); // Gọi các route liên quan đến form
 
 connectDB(); // Thực hiện kết nối ngay lập tức tới DB
 
@@ -37,8 +38,8 @@ app.get('/', (req, res) => { // get phải giống hệt là '/'
   res.render('home'); // Tìm file views/home.ejs
 });
 
-app.use('/', authRoutes); // Sử dụng các route liên quan đến xác thực
-                          // chỉ xét bắt đầu của route thỏa mãn '/'
+app.use('/', authRoutes); // Sử dụng các route liên quan đến xác thực (đăng nhập, đăng ký, đăng xuất)
+app.use('/api/forms', formRoutes); // Sử dụng các route liên quan đến form
                           
 // --- 4. KHỞI ĐỘNG SERVER ---
 app.listen(port, () => {

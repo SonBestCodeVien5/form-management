@@ -1,0 +1,62 @@
+### Using extension REST Client in VSCode, you can test your API endpoints by sending HTTP requests directly from a .http file. Below are examples of how to test the login and form creation endpoints of your application.
+###
+POST http://localhost:3000/login
+Content-Type: application/x-www-form-urlencoded
+
+email=test01@gmail.com&password=123456
+###
+
+### BIẾN TỰ ĐỊNH NGHĨA (Thay giá trị thật vào đây)
+@form_id = your_form_id_here
+@field_id = your_field_id_here
+@sid = your_session_id_here 
+
+### api này trả về danh sách tất cả form, bạn có thể dùng để kiểm tra xem form mới tạo đã xuất hiện chưa
+GET http://localhost:3000/api/forms
+Content-Type: application/json
+# Cookie: connect.sid={{sid}}
+
+{
+  "title": "Form 1",
+  "description": "This is the first form.",
+  "status": "draft"
+}
+
+### Thêm Field vào Form (Thay {{form_id}} bằng ID thật bạn vừa tạo ở bước trước)
+POST http://localhost:3000/api/forms/{{form_id}}/fields
+Content-Type: application/json
+Cookie: connect.sid={{sid}}
+
+{
+  "label": "Giới tính",
+  "type": "select",
+  "order": 1,
+  "required": true,
+  "options": ["Nam", "Nữ", "Khác"]
+}
+
+### ==========================================
+### 1. [PUT] Cập nhật một Field cụ thể
+### Ví dụ: Đổi nhãn từ "Giới tính" thành "Giới tính của bạn" và đổi thứ tự hiển thị
+PUT http://localhost:3000/api/forms/{{form_id}}/fields/{{field_id}}
+Content-Type: application/json
+Cookie: connect.sid={{sid}}
+
+{
+  "label": "Giới tính của bạn",
+  "type": "select",
+  "order": 5,
+  "required": false,
+  "options": ["Nam", "Nữ", "Không tiết lộ"]
+}
+
+
+### 2. [DELETE] Xóa một Field khỏi Form
+DELETE http://localhost:3000/api/forms/{{form_id}}/fields/{{field_id}}
+Cookie: connect.sid={{sid}}
+
+
+### 3. [GET] Kiểm tra lại toàn bộ Form sau khi sửa/xóa
+### Xem lại để chắc chắn mảng fields đã thay đổi đúng như ý muốn
+GET http://localhost:3000/api/forms/{{form_id}}
+Cookie: connect.sid={{sid}}
