@@ -1,7 +1,7 @@
 {
   "name": "project_1",
   "version": "1.0.0",
-  "description": "Dự án web app demo các kỹ thuật xác thực người dùng (Session-based, JWT) và phân quyền (Admin/User) sử dụng Node.js và MongoDB.",
+  "description": "Dự án web app demo kỹ thuật xác thực người dùng (Session-based) và phân quyền (Admin/User) sử dụng Node.js và MongoDB.",
   "main": "app.js",
   "directories": {
     "doc": "docs"
@@ -21,10 +21,7 @@
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
-    "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.0.0",
-    "qrcode": "^1.5.4",
-    "speakeasy": "^2.0.0"
+    "mongoose": "^9.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"
