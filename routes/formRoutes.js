@@ -3,29 +3,25 @@ const router = express.Router();
 const formController = require('../controllers/formController');
 const { isAuthenticated, isAdmin } = require('../middleware/authMiddleware');
 
-// === API Nhóm 3.1: QUẢN LÝ FORM (Chỉ Admin mới có quyền) ===
-// Áp dụng middleware bảo vệ cho tất cả các route ở dưới
-router.use(isAuthenticated, isAdmin);
+// === API Nhóm 3.3: SUBMISSION (Employee) ===
+router.get('/active', isAuthenticated, formController.getActiveForms);
+router.post('/:id/submit', isAuthenticated, formController.submitForm);
 
+// === API Nhóm 3.1: QUẢN LÝ FORM (Chỉ Admin mới có quyền) ===
 router.route('/')
-  .get(formController.getAllForms)    // Lấy danh sách
-  .post(formController.createForm);   // Tạo form mới
+  .get(isAuthenticated, isAdmin, formController.getAllForms)
+  .post(isAuthenticated, isAdmin, formController.createForm);
 
 router.route('/:id')
-  .get(formController.getFormById)    // Lấy chi tiết
-  .put(formController.updateForm)     // Sửa form
-  .delete(formController.deleteForm); // Xóa form
+  .get(isAuthenticated, isAdmin, formController.getFormById)
+  .put(isAuthenticated, isAdmin, formController.updateForm)
+  .delete(isAuthenticated, isAdmin, formController.deleteForm);
 
-// (Lát nữa chúng ta sẽ viết tiếp nhóm 3.2 Field Management ở ngay dưới file này)
-// ... các route 3.1 cũ ...
+// === API Nhóm 3.2: QUẢN LÝ FIELD (Chỉ Admin) ===
+router.post('/:id/fields', isAuthenticated, isAdmin, formController.addField);
 
-// === API Nhóm 3.2: QUẢN LÝ FIELD ===
-// Route: /api/forms/:id/fields
-router.post('/:id/fields', formController.addField);
-
-// Route: /api/forms/:id/fields/:fid
 router.route('/:id/fields/:fid')
-  .put(formController.updateField)
-  .delete(formController.deleteField);
+  .put(isAuthenticated, isAdmin, formController.updateField)
+  .delete(isAuthenticated, isAdmin, formController.deleteField);
 
 module.exports = router;

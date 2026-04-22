@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh sửa Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/styles/theme.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <%- include('partials/navbar') %>
+    <div class="container py-4">
+        <% if (successMessage) { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>Thành công!</strong> <%= successMessage %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Thông tin Form</h5>
+            </div>
+            <div class="card-body">
+                <form action="/api/forms/<%= form._id %>?_method=PUT" method="POST" class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Tiêu đề</label>
+                        <input type="text" name="title" class="form-control" value="<%= form.title %>" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Trạng thái</label>
+                        <select name="status" class="form-select">
+                            <option value="draft" <%= form.status === 'draft' ? 'selected' : '' %>>draft</option>
+                            <option value="active" <%= form.status === 'active' ? 'selected' : '' %>>active</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Mô tả</label>
+                        <textarea name="description" class="form-control" rows="3"><%= form.description %></textarea>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-success">Lưu thông tin Form</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Danh sách Field</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered align-middle">
+                    <thead>
+                        <tr>
+                            <th>Label</th>
+                            <th>Type</th>
+                            <th>Order</th>
+                            <th>Required</th>
+                            <th>Options</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (form.fields && form.fields.length > 0) { %>
+                            <% form.fields.sort((a,b)=> (a.order||0)-(b.order||0)).forEach(function(field){ %>
+                                <tr>
+                                    <td><%= field.label %></td>
+                                    <td><%= field.type %></td>
+                                    <td><%= field.order %></td>
+                                    <td><%= field.required ? 'Yes' : 'No' %></td>
+                                    <td><%= field.options && field.options.length ? field.options.join(', ') : '-' %></td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">Chưa có field nào</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Thêm Field mới</h5>
+            </div>
+            <div class="card-body">
+                <form action="/api/forms/<%= form._id %>/fields" method="POST" class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Label</label>
+                        <input type="text" name="label" class="form-control" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Type</label>
+                        <select name="type" class="form-select" required>
+                            <option value="text">text</option>
+                            <option value="number">number</option>
+                            <option value="date">date</option>
+                            <option value="color">color</option>
+                            <option value="select">select</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Order</label>
+                        <input type="number" name="order" class="form-control" value="0">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Options (type select)</label>
+                        <input type="text" name="options" class="form-control" placeholder="Nam,Nữ,Khác">
+                    </div>
+                    <div class="col-12 form-check ms-2">
+                        <input type="checkbox" class="form-check-input" id="required" name="required" value="true">
+                        <label for="required" class="form-check-label">Bắt buộc</label>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Thêm Field</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

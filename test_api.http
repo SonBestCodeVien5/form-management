@@ -9,20 +9,28 @@ email=test01@gmail.com&password=123456
 ### BIẾN TỰ ĐỊNH NGHĨA (Thay giá trị thật vào đây)
 @form_id = your_form_id_here
 @field_id = your_field_id_here
+@submission_id = your_submission_id_here
 @sid = your_session_id_here 
 
-### api này trả về danh sách tất cả form, bạn có thể dùng để kiểm tra xem form mới tạo đã xuất hiện chưa
+### 1. [GET] Lấy danh sách tất cả form (Admin)
 GET http://localhost:3000/api/forms
 Content-Type: application/json
-# Cookie: connect.sid={{sid}}
+Cookie: connect.sid={{sid}}
+###
+
+### 2. [POST] Tạo form mới (Admin)
+POST http://localhost:3000/api/forms
+Content-Type: application/json
+Cookie: connect.sid={{sid}}
 
 {
   "title": "Form 1",
   "description": "This is the first form.",
-  "status": "draft"
+  "status": "active"
 }
+###
 
-### Thêm Field vào Form (Thay {{form_id}} bằng ID thật bạn vừa tạo ở bước trước)
+### 3. [POST] Thêm Field vào Form (Admin)
 POST http://localhost:3000/api/forms/{{form_id}}/fields
 Content-Type: application/json
 Cookie: connect.sid={{sid}}
@@ -34,10 +42,9 @@ Cookie: connect.sid={{sid}}
   "required": true,
   "options": ["Nam", "Nữ", "Khác"]
 }
+###
 
-### ==========================================
-### 1. [PUT] Cập nhật một Field cụ thể
-### Ví dụ: Đổi nhãn từ "Giới tính" thành "Giới tính của bạn" và đổi thứ tự hiển thị
+### 4. [PUT] Cập nhật một Field cụ thể (Admin)
 PUT http://localhost:3000/api/forms/{{form_id}}/fields/{{field_id}}
 Content-Type: application/json
 Cookie: connect.sid={{sid}}
@@ -49,14 +56,51 @@ Cookie: connect.sid={{sid}}
   "required": false,
   "options": ["Nam", "Nữ", "Không tiết lộ"]
 }
+###
 
-
-### 2. [DELETE] Xóa một Field khỏi Form
+### 5. [DELETE] Xóa một Field khỏi Form (Admin)
 DELETE http://localhost:3000/api/forms/{{form_id}}/fields/{{field_id}}
+Content-Type: application/json
+Cookie: connect.sid={{sid}}
+###
+
+### 6. [GET] Lấy danh sách form đang Active (Employee)
+GET http://localhost:3000/api/forms/active
+Content-Type: application/json
+Cookie: connect.sid={{sid}}
+###
+
+### 7. [POST] Nộp Form (Employee)
+# Lưu ý: answers gửi lên là mảng các object { fieldId, value }
+POST http://localhost:3000/api/forms/{{form_id}}/submit
+Content-Type: application/json
 Cookie: connect.sid={{sid}}
 
+{
+  "answers": [
+    { "fieldId": "{{field_id}}", "value": "Nam" }
+  ]
+}
+###
 
-### 3. [GET] Kiểm tra lại toàn bộ Form sau khi sửa/xóa
-### Xem lại để chắc chắn mảng fields đã thay đổi đúng như ý muốn
+### 8. [GET] Lấy lịch sử nộp bài (Employee/Admin)
+GET http://localhost:3000/api/submissions
+Content-Type: application/json
+Cookie: connect.sid={{sid}}
+###
+
+### 9. [PUT] Duyệt/Từ chối bản ghi (Admin)
+PUT http://localhost:3000/api/submissions/{{submission_id}}/status
+Content-Type: application/json
+Cookie: connect.sid={{sid}}
+
+{
+  "status": "approved",
+  "adminNote": "Thông tin hợp lệ, đã duyệt."
+}
+###
+
+### 10. [GET] Kiểm tra lại chi tiết Form (Admin)
 GET http://localhost:3000/api/forms/{{form_id}}
+Content-Type: application/json
 Cookie: connect.sid={{sid}}
