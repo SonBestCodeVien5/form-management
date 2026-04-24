@@ -1,5 +1,5 @@
 # Hệ Thống Quản lý form động 
-
+# Lưu ý đây lầ nhánh được phát triển nhằm mục đích test API AI agent, không nhằm mục đích để nộp!
 ## Giới thiệu
 Dự án web app quản lý form động sử dụng Node.js và MongoDB.
 
