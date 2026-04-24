@@ -7,6 +7,7 @@ const connectDB = require('./config/database'); // Gọi file cấu hình DB
 
 const authRoutes = require('./routes/authRoutes'); // Gọi các route liên quan đến xác thực
 const formRoutes = require('./routes/formRoutes'); // Gọi các route liên quan đến form
+const submissionRoutes = require('./routes/submissionRoutes'); // Gọi các route liên quan đến nộp bài
 
 connectDB(); // Thực hiện kết nối ngay lập tức tới DB
 
@@ -40,7 +41,8 @@ app.get('/', (req, res) => { // get phải giống hệt là '/'
 
 app.use('/', authRoutes); // Sử dụng các route liên quan đến xác thực (đăng nhập, đăng ký, đăng xuất)
 app.use('/api/forms', formRoutes); // Sử dụng các route liên quan đến form
-                          
+app.use('/api/submissions', submissionRoutes); // Sử dụng các route liên quan đến nộp bài
+
 // --- 4. KHỞI ĐỘNG SERVER ---
 app.listen(port, () => {
   console.log(`Server đang chạy tại: http://localhost:${port}`);
