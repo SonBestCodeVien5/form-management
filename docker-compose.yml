@@ -11,8 +11,8 @@ services:
       - "3000:3000"
     environment:
       PORT: 3000
-      MONGO_URI: mongodb://admin:password123@mongodb:27017/form_management?authSource=admin
-      SESSION_SECRET: ${SESSION_SECRET:-change_me_before_production}
+      MONGO_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongodb:27017/${MONGO_DATABASE}?authSource=admin
+      SESSION_SECRET: ${SESSION_SECRET}
 
   mongodb:
     image: mongo:latest
@@ -21,8 +21,8 @@ services:
     ports:
       - "27018:27017" # Cổng 27018 bên ngoài máy thật -> 27017 bên trong Docker
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
     volumes:
       - mongo_data:/data/db
       - mongo_config:/data/configdb

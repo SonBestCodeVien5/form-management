@@ -17,6 +17,8 @@ Dự án web app quản lý form động sử dụng Node.js và MongoDB.
 2.  **Cấu hình môi trường:**
     * Copy `.env.example` thành `.env`
     * Điều chỉnh `SESSION_SECRET` theo máy của bạn
+    * Các biến `MONGO_ROOT_USERNAME`, `MONGO_ROOT_PASSWORD`, `MONGO_DATABASE` dùng cho Docker Compose
+    * Biến `MONGO_URI` dùng khi chạy local Node.js (ngoài Docker)
 
 3.  **Chạy theo 1 trong 2 cách:**
 
