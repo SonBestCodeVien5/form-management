@@ -1,31 +1,72 @@
-### Using extension REST Client in VSCode, you can test your API endpoints by sending HTTP requests directly from a .http file. Below are examples of how to test the login and form creation endpoints of your application.
-###
-POST http://localhost:3000/login
+### REST Client checklist cho toàn bộ API hiện tại
+### Gợi ý: login trước để lấy connect.sid rồi dán vào biến tương ứng
+
+@base_url = http://localhost:3000
+
+### ====== SESSION / ID BIẾN DÙNG CHUNG ======
+@admin_sid = your_admin_connect_sid_here
+@employee_sid = your_employee_connect_sid_here
+@form_id = your_form_id_here
+@field_id = your_field_id_here
+
+### ====== AUTH ======
+
+### Đăng nhập admin (xem header Set-Cookie để lấy connect.sid)
+POST {{base_url}}/login
+Content-Type: application/x-www-form-urlencoded
+
+email=admin@gmail.com&password=123456
+
+### Đăng nhập employee
+POST {{base_url}}/login
 Content-Type: application/x-www-form-urlencoded
 
 email=test01@gmail.com&password=123456
-###
 
-### BIẾN TỰ ĐỊNH NGHĨA (Thay giá trị thật vào đây)
-@form_id = your_form_id_here
-@field_id = your_field_id_here
-@sid = your_session_id_here 
+### ====== 3.1 FORM MANAGEMENT (ADMIN) ======
 
-### api này trả về danh sách tất cả form, bạn có thể dùng để kiểm tra xem form mới tạo đã xuất hiện chưa
-GET http://localhost:3000/api/forms
+### [GET] /api/forms - Lấy danh sách form
+GET {{base_url}}/api/forms
+Cookie: connect.sid={{admin_sid}}
+
+### [POST] /api/forms - Tạo form mới
+POST {{base_url}}/api/forms
 Content-Type: application/json
-# Cookie: connect.sid={{sid}}
+Cookie: connect.sid={{admin_sid}}
 
 {
-  "title": "Form 1",
-  "description": "This is the first form.",
+  "title": "Form Demo",
+  "description": "Form test cho API",
+  "order": 1,
   "status": "draft"
 }
 
-### Thêm Field vào Form (Thay {{form_id}} bằng ID thật bạn vừa tạo ở bước trước)
-POST http://localhost:3000/api/forms/{{form_id}}/fields
+### [GET] /api/forms/:id - Lấy chi tiết 1 form
+GET {{base_url}}/api/forms/{{form_id}}
+Cookie: connect.sid={{admin_sid}}
+
+### [PUT] /api/forms/:id - Cập nhật form
+PUT {{base_url}}/api/forms/{{form_id}}
 Content-Type: application/json
-Cookie: connect.sid={{sid}}
+Cookie: connect.sid={{admin_sid}}
+
+{
+  "title": "Form Demo Updated",
+  "description": "Đã cập nhật",
+  "order": 2,
+  "status": "active"
+}
+
+### [DELETE] /api/forms/:id - Xóa form
+DELETE {{base_url}}/api/forms/{{form_id}}
+Cookie: connect.sid={{admin_sid}}
+
+### ====== 3.2 FIELD MANAGEMENT (ADMIN) ======
+
+### [POST] /api/forms/:id/fields - Thêm field vào form
+POST {{base_url}}/api/forms/{{form_id}}/fields
+Content-Type: application/json
+Cookie: connect.sid={{admin_sid}}
 
 {
   "label": "Giới tính",
@@ -35,12 +76,10 @@ Cookie: connect.sid={{sid}}
   "options": ["Nam", "Nữ", "Khác"]
 }
 
-### ==========================================
-### 1. [PUT] Cập nhật một Field cụ thể
-### Ví dụ: Đổi nhãn từ "Giới tính" thành "Giới tính của bạn" và đổi thứ tự hiển thị
-PUT http://localhost:3000/api/forms/{{form_id}}/fields/{{field_id}}
+### [PUT] /api/forms/:id/fields/:fid - Cập nhật field
+PUT {{base_url}}/api/forms/{{form_id}}/fields/{{field_id}}
 Content-Type: application/json
-Cookie: connect.sid={{sid}}
+Cookie: connect.sid={{admin_sid}}
 
 {
   "label": "Giới tính của bạn",
@@ -50,15 +89,45 @@ Cookie: connect.sid={{sid}}
   "options": ["Nam", "Nữ", "Không tiết lộ"]
 }
 
+### [DELETE] /api/forms/:id/fields/:fid - Xóa field
+DELETE {{base_url}}/api/forms/{{form_id}}/fields/{{field_id}}
+Cookie: connect.sid={{admin_sid}}
 
-### 2. [DELETE] Xóa một Field khỏi Form
-DELETE http://localhost:3000/api/forms/{{form_id}}/fields/{{field_id}}
-Cookie: connect.sid={{sid}}
+### ====== 3.3 SUBMISSION (EMPLOYEE) ======
 
+### [TEST MỚI] [GET] /api/forms/active - Danh sách form active theo order
+GET {{base_url}}/api/forms/active
+Cookie: connect.sid={{employee_sid}}
 
-### 3. [GET] Kiểm tra lại toàn bộ Form sau khi sửa/xóa
-### Xem lại để chắc chắn mảng fields đã thay đổi đúng như ý muốn
-GET http://localhost:3000/api/forms/{{form_id}}
-Cookie: connect.sid={{sid}}
+### [TEST MỚI] [POST] /api/forms/:id/submit - Nhân viên submit form
+### Lưu ý: key trong answers phải là field _id thực tế
+POST {{base_url}}/api/forms/{{form_id}}/submit
+Content-Type: application/json
+Cookie: connect.sid={{employee_sid}}
 
-###------------------------------------------------------------------------
+{
+  "answers": {
+    "{{field_id}}": "Nam"
+  }
+}
+
+### [TEST MỚI] [GET] /api/forms/submissions - Nhân viên xem bài của chính mình
+GET {{base_url}}/api/forms/submissions
+Cookie: connect.sid={{employee_sid}}
+
+### ====== SUBMISSION ROUTES (DÙNG PREFIX /api/submissions) ======
+
+### [TEST MỚI] [POST] /api/submissions/:templateId - Submit bằng route thay thế
+POST {{base_url}}/api/submissions/{{form_id}}
+Content-Type: application/json
+Cookie: connect.sid={{employee_sid}}
+
+{
+  "answers": {
+    "{{field_id}}": "Nam"
+  }
+}
+
+### [TEST MỚI] [GET] /api/submissions - Admin xem tất cả, employee xem của mình
+GET {{base_url}}/api/submissions
+Cookie: connect.sid={{admin_sid}}
