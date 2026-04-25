@@ -14,21 +14,28 @@ Dự án web app quản lý form động sử dụng Node.js và MongoDB.
     ```bash
     git clone <link-repo-nay>
     ```
-2.  **Cài đặt thư viện:**
+2.  **Cấu hình môi trường:**
+    * Copy `.env.example` thành `.env`
+    * Điều chỉnh `SESSION_SECRET` theo máy của bạn
+
+3.  **Chạy theo 1 trong 2 cách:**
+
+    **Cách A - Full Docker (khuyến nghị khi đóng gói nộp):**
+    ```bash
+    docker compose up --build -d
+    ```
+    Truy cập tại `http://localhost:3000`.
+
+    **Cách B - Chạy local Node.js + Docker MongoDB:**
     ```bash
     npm install
     docker compose up -d
-    ```
-3.  **Cấu hình môi trường:**
-    * Đổi tên file `.env.example` thành `.env`
-    * Điền thông tin kết nối MongoDB và Secret Key.
-4.  **Chạy dự án:**
-    ```bash
     npm start
-    # Hoặc chạy chế độ dev:
+    ```
+    Hoặc chạy chế độ dev:
+    ```bash
     npm run dev
     ```
-5.  **Truy cập:** Mở trình duyệt tại `http://localhost:3000`
 
 ## Cấu trúc dự án
 * `/models`: Chứa Schema Database.

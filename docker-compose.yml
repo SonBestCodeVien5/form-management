@@ -1,6 +1,19 @@
-version: '3.8'
-
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: form_management_app
+    restart: always
+    depends_on:
+      - mongodb
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      MONGO_URI: mongodb://admin:password123@mongodb:27017/form_management?authSource=admin
+      SESSION_SECRET: ${SESSION_SECRET:-change_me_before_production}
+
   mongodb:
     image: mongo:latest
     container_name: form_management_db
@@ -12,6 +25,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password123
     volumes:
       - mongo_data:/data/db
+      - mongo_config:/data/configdb
 
 volumes:
   mongo_data:
+  mongo_config:
