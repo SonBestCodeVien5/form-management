@@ -17,6 +17,7 @@ const fieldSchema = new mongoose.Schema({
 const formTemplateSchema = new mongoose.Schema({
   title: { type: String, required: true, trim: true },
   description: { type: String },
+  order: { type: Number, default: 0 },
   fields: [fieldSchema], // Mảng chứa cấu trúc các ô nhập liệu
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   status: { type: String, enum: ['active', 'draft'], default: 'draft' },

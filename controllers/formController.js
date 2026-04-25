@@ -4,7 +4,7 @@ const FormTemplate = require('../models/FormTemplate');
 exports.getAllForms = async (req, res) => {
   try {
     // select('-fields') nghĩa là loại bỏ mảng fields ra khỏi kết quả trả về
-    const forms = await FormTemplate.find().select('-fields').sort({ createdAt: -1 });
+    const forms = await FormTemplate.find().select('-fields').sort({ order: 1, createdAt: -1 });
     res.status(200).json({ success: true, data: forms });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Lỗi server' });
@@ -14,7 +14,7 @@ exports.getAllForms = async (req, res) => {
 // 2. [POST] /api/forms - Tạo form mới (Chỉ tạo vỏ ngoài, chưa có fields)
 exports.createForm = async (req, res) => {
   try {
-    const { title, description, status } = req.body;
+    const { title, description, order, status } = req.body;
     
     if (!title) {
       return res.status(400).json({ success: false, message: 'Thiếu tiêu đề Form' });
@@ -23,6 +23,7 @@ exports.createForm = async (req, res) => {
     const newForm = await FormTemplate.create({
       title,
       description,
+      order: Number.isFinite(Number(order)) ? Number(order) : 0,
       status: status || 'draft',
       createdBy: req.session.user._id,
       fields: [] // Khởi tạo mảng rỗng, Admin sẽ add field sau (API 3.2)
@@ -49,11 +50,20 @@ exports.getFormById = async (req, res) => {
 // 4. [PUT] /api/forms/:id - Cập nhật thông tin chung của Form (Không sửa fields ở đây)
 exports.updateForm = async (req, res) => {
   try {
-    const { title, description, status } = req.body;
-    
+    const { title, description, order, status } = req.body;
+    const updateData = {
+      title,
+      description,
+      status
+    };
+
+    if (order !== undefined) {
+      updateData.order = Number(order);
+    }
+
     const updatedForm = await FormTemplate.findByIdAndUpdate(
       req.params.id,
-      { title, description, status },
+      updateData,
       { new: true, runValidators: true } // new: true để trả về data mới sau khi update
     ).select('-fields');
 
@@ -138,3 +148,17 @@ exports.deleteField = async (req, res) => {
     res.status(500).json({ success: false, message: 'Lỗi khi xóa field' });
   }
 };
+
+// [GET] /api/forms/active
+exports.getActiveForms = async (req, res) => {
+    try {
+        // Chỉ lấy các form có status là active và sắp xếp theo trường 'order' tăng dần
+        const activeForms = await FormTemplate.find({ status: 'active' })
+                                              .sort({ order: 1 })
+                        .select('title description order fields'); // Chỉ lấy các field cần thiết cho nhân viên
+        res.status(200).json({ success: true, data: activeForms });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Lỗi khi lấy danh sách form.' });
+    }
+};
+
